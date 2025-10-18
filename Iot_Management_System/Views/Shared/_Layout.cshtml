@@ -1,46 +1,187 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Iot_Management_System</title>
+    <title>@ViewData["Title"] - IoT Management System</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Iot_Management_System.styles.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --sidebar-bg: #1b1f3b;
+            --sidebar-hover: #2e3261;
+            --accent: #00aaff;
+            --text-muted: #c5c6ca;
+            --sidebar-width: 240px;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #f5f6fa;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #333;
+        }
+
+        /* ---------- Sidebar ---------- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+            .sidebar .logo {
+                font-size: 20px;
+                font-weight: 600;
+                text-align: center;
+                padding: 18px 0;
+                color: var(--accent);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 10px;
+            }
+
+            .sidebar a {
+                display: flex;
+                align-items: center;
+                color: var(--text-muted);
+                text-decoration: none;
+                padding: 12px 20px;
+                font-size: 15px;
+                transition: all 0.2s ease;
+            }
+
+                .sidebar a i {
+                    margin-right: 10px;
+                    font-size: 18px;
+                }
+
+                .sidebar a:hover,
+                .sidebar a.active {
+                    background-color: var(--sidebar-hover);
+                    color: #fff;
+                    border-left: 4px solid var(--accent);
+                    padding-left: 16px;
+                }
+
+        /* ---------- Main Content ---------- */
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            padding: 10px 0;
+            color: #666;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* ---------- Responsive ---------- */
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+                .sidebar .logo {
+                    font-size: 16px;
+                    padding: 10px 0;
+                }
+
+                .sidebar a span {
+                    display: none;
+                }
+
+                .sidebar a i {
+                    margin-right: 0;
+                    font-size: 20px;
+                }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            footer {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Iot_Management_System</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">IoT Management</div>
+
+        <a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")">
+            <i class="bi bi-cpu"></i><span>Sensors</span>
+        </a>
+
+        <a asp-controller="Dashboard" asp-action="Index" class="@(currentController == "Dashboard" ? "active" : "")">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+        </a>
+
+        <a asp-controller="Alerts" asp-action="Index" class="@(currentController == "Alerts" ? "active" : "")">
+            <i class="bi bi-exclamation-triangle"></i><span>Alerts</span>
+        </a>
+
+        <a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")">
+            <i class="bi bi-graph-up"></i><span>Reports</span>
+        </a>
+
+        <a asp-controller="Users" asp-action="Index" class="@(currentController == "Users" ? "active" : "")">
+            <i class="bi bi-people"></i><span>Users</span>
+        </a>
+
+        <a asp-controller="Account" asp-action="Logout">
+            <i class="bi bi-box-arrow-right"></i><span>Logout</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    <!-- Footer -->
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - Iot_Management_System - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - IoT Management System |
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

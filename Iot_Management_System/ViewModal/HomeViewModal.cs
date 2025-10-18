@@ -36,7 +36,7 @@ namespace Iot_Management_System.ViewModal
 
             HttpClient client = new HttpClient(handler);
             var serializedItemToCreate = JsonConvert.SerializeObject(sensorModal);
-            var response = await client.PostAsync("https://localhost:7238/api/EmpApi/Emp_Insert",
+            var response = await client.PostAsync("https://localhost:7061/api/Home/Add_Sensor",
                                     new StringContent(serializedItemToCreate,
                                             System.Text.Encoding.Unicode,
                                             "application/json"));
