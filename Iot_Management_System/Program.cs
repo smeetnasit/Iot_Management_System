@@ -1,7 +1,11 @@
+using Iot_Management_System.Hepler;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IClientHelper, ClientHelper>();
+
 
 var app = builder.Build();
 

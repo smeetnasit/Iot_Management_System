@@ -17,7 +17,7 @@ namespace Iot_Management_System.Hepler
         private readonly string _Tenant = string.Empty;
         private readonly string _TextConfidential_ApiScope = string.Empty;
         //private readonly string _TextConfidential_ApiBaseAddress = "https://localhost:7233/";
-        private readonly string _TextConfidential_ApiBaseAddress = "https://TextConfidential-dev.azurewebsites.net/";
+      //  private readonly string _TextConfidential_ApiBaseAddress = "https://TextConfidential-dev.azurewebsites.net/";
 
 
         public ClientHelper()
@@ -45,7 +45,7 @@ namespace Iot_Management_System.Hepler
             //var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TextConfidential_ApiScope });
             //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             //_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.BaseAddress = new Uri(_TextConfidential_ApiBaseAddress);
+         //   _httpClient.BaseAddress = new Uri(_TextConfidential_ApiBaseAddress);
             return _httpClient;
 
         }

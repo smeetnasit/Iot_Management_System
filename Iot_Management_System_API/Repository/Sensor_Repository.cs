@@ -21,6 +21,8 @@ namespace Iot_Management_System_API.Repository
         {
             using (var connection = _dBContext.CreateConnection())
             {
+                Console.WriteLine("✅ Connected Successfully!");
+
                 try
                 {
                     CommonResponse commonResponse = new CommonResponse();
@@ -29,12 +31,14 @@ namespace Iot_Management_System_API.Repository
 
                     param.Add("@SensorName", sensor.SensorName, dbType: DbType.String, direction: ParameterDirection.Input);
                     param.Add("@SensorCode", sensor.SensorCode, dbType: DbType.String, direction: ParameterDirection.Input);
-                   
                     param.Add("@State", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
+                    //param.Add("@Created_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
+                    //param.Add("@Updated_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
+                    //param.Add("@Deleted_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
                    
 
 
-                    var task = connection.QueryMultiple("Sp_Add_Sensor", param, commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                    var task = connection.QueryMultiple("Sp_Sensor_Upsert", param, commandTimeout: 600, commandType: CommandType.StoredProcedure);
                     return task.Read<CommonResponse>().FirstOrDefault();
                 }
                 catch (Exception ex)
