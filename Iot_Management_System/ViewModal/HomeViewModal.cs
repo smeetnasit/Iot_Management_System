@@ -24,11 +24,14 @@ namespace Iot_Management_System.ViewModal
             CommonResponseModel res = new CommonResponseModel();
             SensorModal sensorModal = new SensorModal
             {
-                Id = sensor.Id,
+                Sensor_Id = sensor.Sensor_Id,
                 SensorCode = sensor.SensorCode,
                 SensorName = sensor.SensorName,
-                State = sensor.State,
-               
+                SensorType = sensor.SensorType,
+                SensorState = sensor.SensorState,
+                Unit = sensor.Unit,
+                MinThreshold = sensor.MinThreshold,
+                MaxThreshold = sensor.MaxThreshold,
 
             };
             HttpClientHandler handler = new HttpClientHandler();
