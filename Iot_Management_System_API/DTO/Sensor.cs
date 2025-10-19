@@ -4,18 +4,16 @@ namespace Iot_Management_System_API.DTO
 {
     public class Sensor
     {
-        public long Id { get; set; }
-
+        public int Sensor_Id { get; set; }             // Matches DB column name
         public string? SensorCode { get; set; }
-
-
         public string? SensorName { get; set; }
+        public string? SensorType { get; set; }
+        public string? Unit { get; set; }
+        public int? SensorState { get; set; }
+        public double? MinThreshold { get; set; }      // Use double for FLOAT
+        public double? MaxThreshold { get; set; }
 
-      
 
-        public long? State { get; set; }
-
-      
 
 
     }

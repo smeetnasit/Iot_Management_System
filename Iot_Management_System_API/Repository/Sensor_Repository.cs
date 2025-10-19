@@ -21,7 +21,7 @@ namespace Iot_Management_System_API.Repository
         {
             using (var connection = _dBContext.CreateConnection())
             {
-                Console.WriteLine("✅ Connected Successfully!");
+               // Console.WriteLine("✅ Connected Successfully!");
 
                 try
                 {
@@ -29,13 +29,19 @@ namespace Iot_Management_System_API.Repository
 
                     DynamicParameters param = new DynamicParameters();
 
-                    param.Add("@SensorName", sensor.SensorName, dbType: DbType.String, direction: ParameterDirection.Input);
-                    param.Add("@SensorCode", sensor.SensorCode, dbType: DbType.String, direction: ParameterDirection.Input);
-                    param.Add("@State", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
+
+                    param.Add("@Sensor_Id", sensor.Sensor_Id, DbType.Int32, ParameterDirection.Input);
+                    param.Add("@Sensor_Name", sensor.SensorName, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_Code", sensor.SensorCode, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_Type", sensor.SensorType, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_State", sensor.SensorState, DbType.Int32, ParameterDirection.Input);
+                    param.Add("@Unit", sensor.Unit, DbType.String, ParameterDirection.Input);
+                    param.Add("@MinThreshold", sensor.MinThreshold, DbType.Double, ParameterDirection.Input);
+                    param.Add("@MaxThreshold", sensor.MaxThreshold, DbType.Double, ParameterDirection.Input);
                     //param.Add("@Created_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
                     //param.Add("@Updated_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
                     //param.Add("@Deleted_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
-                   
+
 
 
                     var task = connection.QueryMultiple("Sp_Sensor_Upsert", param, commandTimeout: 600, commandType: CommandType.StoredProcedure);

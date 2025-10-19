@@ -43,11 +43,11 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Sensor Name</label>
-                            <input type="text" class="form-control" id="SensorName" required>
+                            <input type="text" class="form-control" id="SensorName" >
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Sensor Code</label>
-                            <input type="text" class="form-control" id="SensorCode" required>
+                            <input type="text" class="form-control" id="SensorCode" >
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -66,8 +66,8 @@
                             <input type="text" class="form-control" id="Unit" placeholder="°C / ppm / lux">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Location</label>
-                            <input type="text" class="form-control" id="Location">
+                            <label class="form-label">Sensor State</label>
+                            <input type="text" class="form-control" id="SensorState">
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -87,7 +87,11 @@
     </div>
 </div>
 
+
+
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css" />
@@ -132,34 +136,166 @@
             $('#addSensorForm').submit(function (e) {
                 e.preventDefault();
 
-                const payload = {
+                var formData = {
                     SensorName: $('#SensorName').val(),
                     SensorCode: $('#SensorCode').val(),
                     SensorType: $('#SensorType').val(),
                     Unit: $('#Unit').val(),
-                    Location: $('#Location').val(),
+                    SensorState: $('#SensorState').val(),
                     MinThreshold: $('#MinThreshold').val(),
                     MaxThreshold: $('#MaxThreshold').val()
                 };
 
                 $.ajax({
-                    url: '/api/Home/Add_Sensor',
+                    url: '/Home/Add_Sensor',
                     type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                    success: function (res) {
-                        alert('Sensor added successfully!');
-                        $('#addSensorModal').modal('hide');
-                        table.ajax.reload();
+                    data: formData,
+                    success: function (response) {
+                        console.log('Data saved successfully:', response);
+
+                        // Accept numeric/string 200 or a truthy success flag
+                        if (response && (response.code == "200" || response.code == 200 || response.success === true)) {
+                            $('#addSensorModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Saved',
+                                text: 'Data saved successfully!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(function () {
+                                table.ajax.reload(null, false); // reload DataTable without resetting paging
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while saving.'
+                            });
+                        }
                     },
-                    error: function () {
-                        alert('Error adding sensor');
+                    error: function (xhr, status, error) {
+                        console.error('Error saving sensor:', {
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while saving. Please try again later.'
+                        });
                     }
                 });
             });
         });
     </script>
 }
+
+@* @section Scripts {
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#sensorTable').DataTable({
+                ajax: {
+                    url: '/api/Sensor/GetAll',
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'sensorName' },
+                    { data: 'sensorType' },
+                    { data: 'sensorCode' },
+                    { data: 'location' },
+                    { data: 'unit' },
+                    {
+                        data: 'state',
+                        render: function (data) {
+                            return data == 1
+                                ? '<span class="badge bg-success">Active</span>'
+                                : '<span class="badge bg-secondary">Inactive</span>';
+                        }
+                    },
+                    { data: 'updatedDate' },
+                    {
+                        data: 'id',
+                        render: function (data) {
+                            return `
+                                <button class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                            `;
+                        }
+                    }
+                ]
+            });
+
+            // Add Sensor
+            $('#addSensorForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    //  EmpCode: $('#empCode').val(),
+                    SensorName: $('#SensorName').val(),
+                    SensorCode: $('#SensorCode').val(),
+                    SensorType: $('#SensorType').val(),
+                    Unit: $('#Unit').val(),
+                    MinThreshold: $('#MinThreshold').val(),
+                    MaxThreshold: $('#MaxThreshold').val(),
+                };
+
+
+                   $.ajax({
+                    url: '/Home/Add_Sensor',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        console.log('Data saved successfully:', response);
+
+                        // Check response code
+                        if (response.code == "200") {
+                            $('#employeeModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Saved',
+                                text: 'Data saved successfully!',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function () {
+                                window.location.reload();
+                            });
+                        } 
+                        else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while saving.'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error saving employee:', {
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while saving. Please try again later.'
+                        });
+                    }
+                });
+
+              
+            });
+        });
+    </script>
+} *@
 
 
 

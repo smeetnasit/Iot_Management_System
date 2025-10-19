@@ -2,24 +2,17 @@
 {
     public class SensorModal
     {
-        public long Id { get; set; }
-
+        public int Sensor_Id { get; set; }          // match DB and SP name
         public string? SensorCode { get; set; }
-
-
         public string? SensorName { get; set; }
-
-        public string? State { get; set; }
-
+        public string? SensorType { get; set; }
+        public string? Unit { get; set; }
+        public int? SensorState { get; set; }
+        public double? MinThreshold { get; set; }   // for decimal values
+        public double? MaxThreshold { get; set; }   // for decimal values
     }
-  
 
-    public class State
-    {
-        public int Id { get; set; }
-        public string StateName { get; set; }
-        public int CountryId { get; set; }
-    }
+
 
 
 
