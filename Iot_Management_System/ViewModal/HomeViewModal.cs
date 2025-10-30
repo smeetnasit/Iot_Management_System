@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.DataProtection;
-using Iot_Management_System.Hepler;
+﻿using Iot_Management_System.Hepler;
 using Iot_Management_System.Models;
-using System.Net.Http;
+using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace Iot_Management_System.ViewModal
 {
@@ -25,11 +26,9 @@ namespace Iot_Management_System.ViewModal
             SensorModal sensorModal = new SensorModal
             {
                 Sensor_Id = sensor.Sensor_Id,
-                SensorCode = sensor.SensorCode,
-                SensorName = sensor.SensorName,
-                SensorType = sensor.SensorType,
-                SensorState = sensor.SensorState,
-                Unit = sensor.Unit,
+                Sensor_Code = sensor.Sensor_Code,
+                Sensor_Name = sensor.Sensor_Name,
+                Sensor_State = sensor.Sensor_State,
                 MinThreshold = sensor.MinThreshold,
                 MaxThreshold = sensor.MaxThreshold,
 
@@ -40,9 +39,9 @@ namespace Iot_Management_System.ViewModal
             HttpClient client = new HttpClient(handler);
             var serializedItemToCreate = JsonConvert.SerializeObject(sensorModal);
             var response = await client.PostAsync("https://localhost:7061/api/Home/Add_Sensor",
-                                    new StringContent(serializedItemToCreate,
-                                            System.Text.Encoding.Unicode,
-                                            "application/json"));
+                                   new StringContent(serializedItemToCreate,
+                                   System.Text.Encoding.UTF8, "application/json")
+                                    );
 
             if (response.IsSuccessStatusCode)
             {
@@ -56,6 +55,41 @@ namespace Iot_Management_System.ViewModal
             }
             return res;
         }
+
+
+
+        public async Task<List<Sensor_Units>> Get_Sensor_Units()
+        {
+            List<Sensor_Units> units = new List<Sensor_Units>();
+
+            HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
+            var response = await client.GetAsync("https://localhost:7061/api/Home/Get_Sensor_Units", HttpCompletionOption.ResponseContentRead);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                units = JsonConvert.DeserializeObject<List<Sensor_Units>>(content);
+            }
+            return units;
+        }
+
+
+        public async Task<List<SensorModal>> GetSensorsData()
+        {
+            List<SensorModal> res = new List<SensorModal>();
+
+            HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
+            var response = await client.GetAsync("https://localhost:7061/api/Home/GetSensorsData", HttpCompletionOption.ResponseContentRead);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                res = JsonConvert.DeserializeObject<List<SensorModal>>(content);
+            }
+
+            return res;
+        }
+
 
 
         //public async Task<List<Country>> GetCountries()

@@ -31,11 +31,10 @@ namespace Iot_Management_System_API.Repository
 
 
                     param.Add("@Sensor_Id", sensor.Sensor_Id, DbType.Int32, ParameterDirection.Input);
-                    param.Add("@Sensor_Name", sensor.SensorName, DbType.String, ParameterDirection.Input);
-                    param.Add("@Sensor_Code", sensor.SensorCode, DbType.String, ParameterDirection.Input);
-                    param.Add("@Sensor_Type", sensor.SensorType, DbType.String, ParameterDirection.Input);
-                    param.Add("@Sensor_State", sensor.SensorState, DbType.Int32, ParameterDirection.Input);
-                    param.Add("@Unit", sensor.Unit, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_Name", sensor.Sensor_Name, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_Code", sensor.Sensor_Code, DbType.String, ParameterDirection.Input);
+                    param.Add("@Sensor_State", sensor.Sensor_State, DbType.Int32, ParameterDirection.Input);
+                //    param.Add("@Unit", sensor.Unit, DbType.String, ParameterDirection.Input);
                     param.Add("@MinThreshold", sensor.MinThreshold, DbType.Double, ParameterDirection.Input);
                     param.Add("@MaxThreshold", sensor.MaxThreshold, DbType.Double, ParameterDirection.Input);
                     //param.Add("@Created_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
@@ -53,6 +52,44 @@ namespace Iot_Management_System_API.Repository
                 }
             }
         }
+
+
+        public async Task<List<Sensor_Units>> Get_Sensor_Units()
+        {
+            using (var connection = _dBContext.CreateConnection())
+            {
+
+                try
+                {
+                    var items = await connection.QueryAsync<Sensor_Units>("Sp_Get_Sensor_Units", commandType: CommandType.StoredProcedure);
+                    return items.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+
+             public async Task<List<Sensor>> GetSensorsData()
+        {
+            using (var connection = _dBContext.CreateConnection())
+            {
+                try
+                {
+                    var items = await connection.QueryAsync<Sensor>("Sp_Get_Sensors_Data", commandType: CommandType.StoredProcedure);
+                    return items.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    throw;
+                }
+            }
+
+        }
+    }
 
         //public async Task<CommonResponse> MasterCountryInsert(int id)
         //{
@@ -287,5 +324,5 @@ namespace Iot_Management_System_API.Repository
         //        }
         //    }
         //}
-    }
+   // }
 }
