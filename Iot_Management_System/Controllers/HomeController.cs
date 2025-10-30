@@ -32,6 +32,35 @@ namespace Iot_Management_System.Controllers
             return Json(res);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get_Sensor_Units()
+        {
+            try
+            {
+                var res = await _homeViewModal.Get_Sensor_Units();
+                return Json(res);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = ex.Message;
+                return Json(500, errorMessage);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetSensorsData()
+        {
+
+
+            var sensorsdata = await _homeViewModal.GetSensorsData();
+
+
+            return Json(new { data = sensorsdata });
+        }
+
+
+
         //[HttpGet]
         //public async Task<IActionResult> GetCountries()
         //{

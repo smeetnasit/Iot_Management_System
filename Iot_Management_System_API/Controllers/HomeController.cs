@@ -36,6 +36,45 @@ namespace Iot_Management_System_API.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        [Route("Get_Sensor_Units")]
+
+        public async Task<IActionResult> Get_Sensor_Units()
+        {
+            try
+            {
+                var res = await _sensor.Get_Sensor_Units();
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(500);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("GetSensorsData")]
+
+        public async Task<IActionResult> GetSensorsData()
+        {
+            try
+            {
+                var res = await _sensor.GetSensorsData();
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+
         // [HttpPost]
         //[Route("MasterCountry_Insert")]
         //public async Task<IActionResult> MasterCountryInsert(int id)
@@ -208,7 +247,7 @@ namespace Iot_Management_System_API.Controllers
         //                {
         //                    var emp = new GetExcelEmployee
         //                    {
-                               
+
         //                        EmpName = worksheet.Cells[row, 1].Value?.ToString().Trim(),
         //                        Address1 = worksheet.Cells[row, 2].Value?.ToString().Trim(),
         //                        Address2 = worksheet.Cells[row, 3].Value?.ToString().Trim(),
