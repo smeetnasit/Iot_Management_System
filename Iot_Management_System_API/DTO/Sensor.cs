@@ -24,7 +24,7 @@ namespace Iot_Management_System_API.DTO
 
     public class Sensor_Units
     {
-        public int Id { get; set; }
+        public int SensorID { get; set; }
         public string? SensorName { get; set; }
         public string? MeasuredParameter { get; set; }
         public string? Unit { get; set; }
