@@ -74,6 +74,23 @@ namespace Iot_Management_System_API.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("DeleteSensorsData")]
+
+        public async Task<IActionResult> DeleteSensorsData(int id)
+        {
+            try
+            {
+                var res = await _sensor.DeleteSensorsData(id);
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
 
         // [HttpPost]
         //[Route("MasterCountry_Insert")]
@@ -200,22 +217,7 @@ namespace Iot_Management_System_API.Controllers
         //    }
         //}
 
-        //[HttpPost]
-        //[Route("DeleteEmployees")]
 
-        //public async Task<IActionResult> DeleteEmployees(int id)
-        //{
-        //    try
-        //    {
-        //        var res = await _employee.DeleteEmployees(id);
-
-        //        return Ok(res);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500);
-        //    }
-        //}
 
 
         //[HttpPost("ImportEmployees")]

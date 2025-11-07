@@ -134,7 +134,7 @@
                                 <button class="btn btn-outline-warning btn-edit" data-row='${JSON.stringify(row)}'>
                                     Edit
                                 </button>
-                                <button class="btn btn-outline-danger btn-delete" data-id="${row.sensor_id}">
+                                <button class="btn btn-outline-danger btn-delete" data-id="${row.sensor_Id}">
                                     Delete
                                 </button>
                             `;
@@ -182,9 +182,9 @@
                 success: function (data) {
                     let options = '<option value="">Select Sensor</option>';
                     data.forEach(function (item) {
-                        options += `<option value="${item.sensor_ID}" ${item.sensorName == selectedValue ? 'selected' : ''}>${item.sensorName}</option>`;
+                        options += `<option value="${item.sensorName}" ${item.sensorName == selectedValue ? 'selected' : ''}>${item.sensorName}</option>`;
                     });
-                    $(selector).html(options);
+                    $('#sensorName').html(options);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error fetching countries:', error);
@@ -242,7 +242,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '/Home/Delete_Sensor',
+                            url: '/Home/DeleteSensorsData',
                             type: 'POST',
                             data: { id: id },
                             success: function (res) {

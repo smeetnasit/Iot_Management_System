@@ -1,0 +1,255 @@
+﻿@{
+    ViewData["Title"] = "IoT Dashboard";
+}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4"> <h2 class="fw-bold text-primary"> <i class="bi bi-speedometer2"> </i>Dashboard</h2> <small class="text-muted">Updated: @DateTime.Now.ToString("g")</small> </div>
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Active Sensors</h6>
+                <div class="d-flex align-items-center">
+                    <h3 class="mb-0 me-3" id="kpi-active">128</h3>
+                    <span class="text-success">+4.2%</span>
+                </div>
+                <small class="text-muted">Compared to last hour</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Alerts</h6>
+                <div class="d-flex align-items-center">
+                    <h3 class="mb-0 me-3 text-danger" id="kpi-alerts">7</h3>
+                    <span class="text-muted">Open</span>
+                </div>
+                <small class="text-muted">Critical &amp; Warning</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Avg. Latency (ms)</h6>
+                <div class="d-flex align-items-center">
+                    <h3 class="mb-0 me-3" id="kpi-latency">34</h3>
+                    <span class="text-muted">avg</span>
+                </div>
+                <small class="text-muted">Past 24 hours</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Throughput</h6>
+                <div class="d-flex align-items-center">
+                    <h3 class="mb-0 me-3" id="kpi-throughput">2,145</h3>
+                    <span class="text-success">+1.1%</span>
+                </div>
+                <small class="text-muted">Events / hour</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Recent -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Sensor Activity (last 24h)</h6>
+                    <small class="text-muted">hourly</small>
+                </div>
+                <canvas id="activityChart" height="120" aria-label="Sensor activity chart" role="img"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Recent Alerts</h6>
+                <ul class="list-group list-group-flush" id="recentAlerts" style="max-height:280px; overflow:auto;">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>Sensor-21</strong>
+                            <div class="small text-muted">Temperature threshold exceeded</div>
+                        </div>
+                        <span class="badge bg-danger rounded-pill">Now</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>Sensor-7</strong>
+                            <div class="small text-muted">Connection lost</div>
+                        </div>
+                        <span class="badge bg-warning text-dark rounded-pill">5m</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>Sensor-102</strong>
+                            <div class="small text-muted">Battery low</div>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">20m</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent readings table -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Recent Readings</h6>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary" id="refreshBtn">Refresh</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                        <th>Received</th>
+                    </tr>
+                </thead>
+                <tbody id="readingsTableBody">
+                    <tr>
+                        <td>Sensor-21</td>
+                        <td>78.4 °C</td>
+                        <td><span class="badge bg-danger">Critical</span></td>
+                        <td>Just now</td>
+                    </tr>
+                    <tr>
+                        <td>Sensor-7</td>
+                        <td>--</td>
+                        <td><span class="badge bg-warning text-dark">Offline</span></td>
+                        <td>5m ago</td>
+                    </tr>
+                    <tr>
+                        <td>Sensor-102</td>
+                        <td>42%</td>
+                        <td><span class="badge bg-secondary">Normal</span></td>
+                        <td>10m ago</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+@* @section Scripts { <!-- Chart.js CDN --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    (function () {
+        // Sample data - replace with server data via AJAX/fetch
+        const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+        const data = labels.map((_, i) => Math.floor(50 + Math.random() * 150));
+
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Events',
+                    data,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13,110,253,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: true },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 50 }
+                    }
+                }
+            }
+        });
+
+        // Simple client-side refresh simulation
+        document.getElementById('refreshBtn').addEventListener('click', function () {
+            // In a real app, call an endpoint to get fresh metrics and update DOM/chart
+            const newVal = Math.floor(100 + Math.random() * 200);
+            document.getElementById('kpi-throughput').textContent = newVal.toLocaleString();
+
+            // Update chart with a new data point
+            activityChart.data.datasets[0].data.shift();
+            activityChart.data.datasets[0].data.push(Math.floor(50 + Math.random() * 150));
+            activityChart.update();
+        });
+    })();
+</script>
+} *@
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Load KPIs
+            function loadKPIs() {
+                $.get('/Home/GetDashboardStats', function (data) {
+                    $('#kpi-active').text(data.activeSensors);
+                    $('#kpi-alerts').text(data.alertCount);
+                    $('#kpi-latency').text(data.avgLatency);
+                    $('#kpi-throughput').text(data.throughput.toLocaleString());
+                });
+            }
+
+            // Load Activity Chart
+            function loadActivityChart() {
+                $.get('/Home/GetSensorActivity', function (res) {
+                    const ctx = document.getElementById('activityChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: res.labels,
+                            datasets: [{
+                                label: 'Sensor Events',
+                                data: res.data,
+                                borderColor: '#0d6efd',
+                                backgroundColor: 'rgba(13,110,253,0.1)',
+                                fill: true,
+                                tension: 0.3,
+                                pointRadius: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true } }
+                        }
+                    });
+                });
+            }
+
+            loadKPIs();
+            loadActivityChart();
+
+            $('#refreshBtn').click(function () {
+                loadKPIs();
+                loadActivityChart();
+            });
+
+        });
+    </script>
+}

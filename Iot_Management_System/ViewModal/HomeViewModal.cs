@@ -91,6 +91,25 @@ namespace Iot_Management_System.ViewModal
         }
 
 
+        public async Task<CommonResponseModel> DeleteSensorsData(int id)
+        {
+            CommonResponseModel res = new CommonResponseModel();
+
+            HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
+            var serializedItemToCreate = JsonConvert.SerializeObject(id);
+            string url = $"https://localhost:7061/api/Home/DeleteSensorsData?id={id}";
+            var response = await client.PostAsync(url,
+                                    new StringContent(serializedItemToCreate,
+                                            System.Text.Encoding.Unicode,
+                                            "application/json"));
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                res = JsonConvert.DeserializeObject<CommonResponseModel>(content);
+            }
+            return res;
+        }
+
 
         //public async Task<List<Country>> GetCountries()
         //{
@@ -239,24 +258,7 @@ namespace Iot_Management_System.ViewModal
         //}
 
 
-        //public async Task<CommonResponseModel> DeleteEmployees(int id)
-        //{
-        //    CommonResponseModel res = new CommonResponseModel();
 
-        //    HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
-        //    var serializedItemToCreate = JsonConvert.SerializeObject(id);
-        //    string url = $"https://localhost:7238/api/EmpApi/DeleteEmployees?id={id}";
-        //    var response = await client.PostAsync(url,
-        //                            new StringContent(serializedItemToCreate,
-        //                                    System.Text.Encoding.Unicode,
-        //                                    "application/json"));
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var content = await response.Content.ReadAsStringAsync();
-        //        res = JsonConvert.DeserializeObject<CommonResponseModel>(content);
-        //    }
-        //    return res;
-        //}
 
 
 
