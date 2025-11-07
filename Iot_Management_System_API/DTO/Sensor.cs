@@ -9,6 +9,8 @@ namespace Iot_Management_System_API.DTO
         public string? Sensor_Code { get; set; }
         public string? Sensor_Unit { get; set; }  // this comes from SensorUnits
         public int? Sensor_State { get; set; }
+        public int? IsActive { get; set; }
+
         public decimal? MinThreshold { get; set; }
         public decimal? MaxThreshold { get; set; }
         public string? Created_By { get; set; }

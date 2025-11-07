@@ -59,6 +59,17 @@ namespace Iot_Management_System.Controllers
             return Json(new { data = sensorsdata });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteSensorsData(int id)
+        {
+
+
+            var res = await _homeViewModal.DeleteSensorsData(id);
+
+            return Json(res);
+        }
+
+
 
 
         //[HttpGet]
@@ -154,15 +165,6 @@ namespace Iot_Management_System.Controllers
         //}
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> DeleteEmployees(int id)
-        //{
-
-
-        //    var res = await _homeViewModal.DeleteEmployees(id);
-
-        //    return Json(res);
-        //}
 
 
 
