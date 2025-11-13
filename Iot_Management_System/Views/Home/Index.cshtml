@@ -1,7 +1,18 @@
 ﻿@{
     ViewData["Title"] = "Sensors Management";
 }
+<style>
+        .field-error {
+        color: #d9534f;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
 
+    .input-error {
+        border-color: #d9534f !important;
+    }
+
+</style>
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold text-primary"><i class="bi bi-cpu"></i> Sensors Management</h4>
@@ -42,29 +53,34 @@
                             <select class="form-control" id="sensorName" name="Sensor_Name">
                                 <option value="">Select Sensor</option>
                             </select>
+                            @* <span id="Sensor_NameValidation" class="text-danger"></span> *@
                         </div>
                         <div class="col-md-6">
                             <label for="sensorCode" class="form-label">Sensor Code</label>
                             <input type="text" class="form-control" id="sensorCode" placeholder="Enter Sensor Code">
                         </div>
+                        @* <span id="Sensor_CodeValidation" class="text-danger"></span> *@
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="sensorState" class="form-label">Sensor State</label>
-                            <input type="text" class="form-control" id="sensorState" placeholder="Active / Inactive">
+                            <input type="text" class="form-control" id="sensorState" placeholder="1(Active) / 0(Inactive)">
                         </div>
+                        @* <span id="sensorStateValidation" class="text-danger"></span> *@
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="minThreshold" class="form-label">Min Threshold</label>
-                            <input type="number" class="form-control" id="minThreshold" placeholder="Enter minimum value">
+                            <input type="number" class="form-control" name="minThreshold" id="minThreshold" placeholder="Enter minimum value">
                         </div>
+                        @* <span id="MinThresholdValidation" class="text-danger"></span> *@
                         <div class="col-md-6">
                             <label for="maxThreshold" class="form-label">Max Threshold</label>
-                            <input type="number" class="form-control" id="maxThreshold" placeholder="Enter maximum value">
+                            <input type="number" class="form-control" name="maxThreshold" id="maxThreshold" placeholder="Enter maximum value">
                         </div>
+                        @* <span id="MaxThresholdValidation" class="text-danger"></span> *@
                     </div>
 
                     <div class="text-end">
@@ -192,11 +208,18 @@
             });
         }
 
+                $('#addSensorModal').on('show.bs.modal', function () {
+           // $('#addSensorForm')[0].reset(); // reset form fields
+            $(".field-error").remove();     // remove previous error messages
+            $(".input-error").removeClass("input-error"); // remove error highlights
+        });
+
 
             // ✅ Add/Update Sensor
             $('#addSensorForm').off('submit').on('submit', function (e) {
                 e.preventDefault();
-
+                 $(".field-error").remove();
+                 $(".input-error").removeClass("input-error");
                 var formData = {
                     Sensor_Id: $('#sensorIdHidden').val(),
                     Sensor_Name: $('#sensorName').val(),
@@ -211,6 +234,7 @@
                     type: 'POST',
                     data: formData,
                     success: function (response) {
+
                         if (response && (response.code == 200 || response.success)) {
                             $('#addSensorModal').modal('hide');
                             Swal.fire({
@@ -220,7 +244,48 @@
                                 showConfirmButton: false
                             });
                             table.ajax.reload(null, false);
-                        } else {
+                        }
+
+
+                            // ERROR FROM BACKEND
+                        if (response && response.message) {
+                                $(".field-error").remove();
+                                $(".input-error").removeClass("input-error");
+
+
+                            // Field mapping
+                            var map = {
+                                "SensorName": "#sensorName",
+                                "SensorCode": "#sensorCode",
+                                "SensorState": "#sensorState",
+                                "MinThreshold": "#minThreshold",
+                                "MaxThreshold": "#maxThreshold"
+                            };
+
+                            var fieldSelector = null;
+
+                            // detect target field
+                            Object.keys(map).forEach(key => {
+                                if (response.message.toLowerCase().includes(key.toLowerCase())) {
+                                    fieldSelector = map[key];
+                                }
+                            });
+
+                            if (fieldSelector) {
+                                $(fieldSelector).addClass("input-error");
+                                $(fieldSelector).after(
+                                    `<div class="field-error">${response.message}</div>`
+                                );
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Validation Error",
+                                    text: response.message
+                                });
+                            }
+
+                        } 
+                        else {
                             Swal.fire({ icon: 'error', title: 'Error', text: 'Save failed.' });
                         }
                     },
