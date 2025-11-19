@@ -1,8 +1,323 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Sensors Management";
 }
+<style>
+        .field-error {
+        color: #d9534f;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    .input-error {
+        border-color: #d9534f !important;
+    }
+
+</style>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-primary"><i class="bi bi-cpu"></i> Sensors Management</h4>
+        <button class="btn btn-primary" id="btnaddSensorModal">
+            <i class="bi bi-plus-circle"></i> Add Sensor
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title" id="empList">Sensors List</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="SensorTable">
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Add/Edit Sensor Modal -->
+<div class="modal fade" id="addSensorModal" tabindex="-1" aria-labelledby="addSensorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addSensorModalLabel">Add New Sensor</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="addSensorForm">
+                    <input type="hidden" id="sensorIdHidden" name="Sensor_Id">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sensorName" class="form-label">Sensor Name</label>
+                            <select class="form-control" id="sensorName" name="Sensor_Name">
+                                <option value="">Select Sensor</option>
+                            </select>
+                            @* <span id="Sensor_NameValidation" class="text-danger"></span> *@
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sensorCode" class="form-label">Sensor Code</label>
+                            <input type="text" class="form-control" id="sensorCode" placeholder="Enter Sensor Code">
+                        </div>
+                        @* <span id="Sensor_CodeValidation" class="text-danger"></span> *@
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sensorState" class="form-label">Sensor State</label>
+                            <input type="text" class="form-control" id="sensorState" placeholder="1(Active) / 0(Inactive)">
+                        </div>
+                        @* <span id="sensorStateValidation" class="text-danger"></span> *@
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="minThreshold" class="form-label">Min Threshold</label>
+                            <input type="number" class="form-control" name="minThreshold" id="minThreshold" placeholder="Enter minimum value">
+                        </div>
+                        @* <span id="MinThresholdValidation" class="text-danger"></span> *@
+                        <div class="col-md-6">
+                            <label for="maxThreshold" class="form-label">Max Threshold</label>
+                            <input type="number" class="form-control" name="maxThreshold" id="maxThreshold" placeholder="Enter maximum value">
+                        </div>
+                        @* <span id="MaxThresholdValidation" class="text-danger"></span> *@
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Save Sensor</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css" />
+
+    <script>
+        $(document).ready(function () {
+
+            // ✅ Open Modal
+            $('#btnaddSensorModal').click(function () {
+                $('#addSensorModalLabel').text('Add New Sensor');
+                $('#addSensorForm')[0].reset();
+                $('#sensorIdHidden').val('');
+                LoadSensorsUnits();
+                $('#addSensorModal').modal('show');
+            });
+
+            // ✅ Load DataTable
+            var table = $('#SensorTable').DataTable({
+                destroy: true,
+                autoWidth: false,
+                paging: true,
+                processing: true,
+                language: {
+                    processing: "<div class='spinner-border text-primary'></div>",
+                    emptyTable: "No data available"
+                },
+                ajax: {
+                    url: '/Home/GetSensorsData',
+                    type: 'GET',
+                    dataType: 'json'
+                },
+                columns: [
+                    { title: "Sensor Code", data: "sensor_Code" },
+                    { title: "Sensor Name", data: "sensor_Name" },
+                    { title: "Unit", data: "sensor_Unit" },
+                    {
+                        title: "Status",
+                        data: "sensor_State",
+                        render: function (data) {
+                            return data == 1
+                                ? '<span class="badge bg-success">Active</span>'
+                                : '<span class="badge bg-secondary">Inactive</span>';
+                        }
+                    },
+                    { title: "Min Threshold", data: "minThreshold" },
+                    { title: "Max Threshold", data: "maxThreshold" },
+                    {
+                        title: "Actions",
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-outline-warning btn-edit" data-row='${JSON.stringify(row)}'>
+                                    Edit
+                                </button>
+                                <button class="btn btn-outline-danger btn-delete" data-id="${row.sensor_Id}">
+                                    Delete
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+
+            // ✅ Load Sensor Names from SensorUnits table
+            function LoadSensorsUnits() {
+                $.ajax({
+                    url: '/Home/Get_Sensor_Units',
+                    type: 'GET',
+                    success: function (response) {
+                        var options = '<option value="">Select Sensor</option>';
+                        response.forEach(item => {
+                            options += `<option value="${item.sensorName}">${item.sensorName} - ${item.Unit}</option>`;
+                        });
+                        $('#sensorName').html(options);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching units:', error);
+                    }
+                });
+            }
+
+            // ✅ Edit Button Click
+            $('#SensorTable').on('click', '.btn-edit', function () {
+                var row = $(this).data('row');
+                $('#addSensorModalLabel').text('Edit Sensor');
+                $('#sensorIdHidden').val(row.sensor_Id);
+                $('#sensorName').val(row.sensor_Name);
+                loadSensorNameDropdown('sensorName', '#sensorName', row.sensor_Name);
+                $('#sensorCode').val(row.sensor_Code);
+                $('#sensorState').val(row.sensor_State);
+                $('#minThreshold').val(row.minThreshold);
+                $('#maxThreshold').val(row.maxThreshold);
+                $('#addSensorModal').modal('show');
+            });
+
+            function loadSensorNameDropdown(type, selector, selectedValue) {
+            $.ajax({
+                url: '/Home/Get_Sensor_Units',
+                type: 'GET',
+                success: function (data) {
+                    let options = '<option value="">Select Sensor</option>';
+                    data.forEach(function (item) {
+                        options += `<option value="${item.sensorName}" ${item.sensorName == selectedValue ? 'selected' : ''}>${item.sensorName}</option>`;
+                    });
+                    $('#sensorName').html(options);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching countries:', error);
+                }
+            });
+        }
+
+                $('#addSensorModal').on('show.bs.modal', function () {
+           // $('#addSensorForm')[0].reset(); // reset form fields
+            $(".field-error").remove();     // remove previous error messages
+            $(".input-error").removeClass("input-error"); // remove error highlights
+        });
+
+
+            // ✅ Add/Update Sensor
+            $('#addSensorForm').off('submit').on('submit', function (e) {
+                e.preventDefault();
+                 $(".field-error").remove();
+                 $(".input-error").removeClass("input-error");
+                var formData = {
+                    Sensor_Id: $('#sensorIdHidden').val(),
+                    Sensor_Name: $('#sensorName').val(),
+                    Sensor_Code: $('#sensorCode').val(),
+                    Sensor_State: $('#sensorState').val(),
+                    MinThreshold: $('#minThreshold').val(),
+                    MaxThreshold: $('#maxThreshold').val()
+                };
+
+                $.ajax({
+                    url: '/Home/Add_Sensor',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+
+                        if (response && (response.code == 200 || response.success)) {
+                            $('#addSensorModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: formData.Sensor_Id > 0 ? 'Sensor Updated' : 'Sensor Added',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            table.ajax.reload(null, false);
+                        }
+
+
+                            // ERROR FROM BACKEND
+                        if (response && response.message) {
+                                $(".field-error").remove();
+                                $(".input-error").removeClass("input-error");
+
+
+                            // Field mapping
+                            var map = {
+                                "SensorName": "#sensorName",
+                                "SensorCode": "#sensorCode",
+                                "SensorState": "#sensorState",
+                                "MinThreshold": "#minThreshold",
+                                "MaxThreshold": "#maxThreshold"
+                            };
+
+                            var fieldSelector = null;
+
+                            // detect target field
+                            Object.keys(map).forEach(key => {
+                                if (response.message.toLowerCase().includes(key.toLowerCase())) {
+                                    fieldSelector = map[key];
+                                }
+                            });
+
+                            if (fieldSelector) {
+                                $(fieldSelector).addClass("input-error");
+                                $(fieldSelector).after(
+                                    `<div class="field-error">${response.message}</div>`
+                                );
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Validation Error",
+                                    text: response.message
+                                });
+                            }
+
+                        } 
+                        else {
+                            Swal.fire({ icon: 'error', title: 'Error', text: 'Save failed.' });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Server error occurred.' });
+                    }
+                });
+            });
+
+            // ✅ Delete Sensor
+            $('#SensorTable').on('click', '.btn-delete', function () {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: "Delete Sensor?",
+                    text: "This action cannot be undone.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/Home/DeleteSensorsData',
+                            type: 'POST',
+                            data: { id: id },
+                            success: function (res) {
+                                Swal.fire({ icon: 'success', title: 'Deleted!' });
+                                table.ajax.reload(null, false);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

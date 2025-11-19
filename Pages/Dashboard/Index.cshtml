@@ -1,0 +1,115 @@
+@{
+    ViewData["Title"] = "IoT Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <h3 class="text-primary fw-bold mb-4"><i class="bi bi-speedometer2"></i> IoT Monitoring Dashboard</h3>
+
+    <!-- Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6>Total Sensors</h6>
+                    <h3 id="totalSensors" class="text-primary">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6>Active Sensors</h6>
+                    <h3 id="activeSensors" class="text-success">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6>Inactive Sensors</h6>
+                    <h3 id="inactiveSensors" class="text-danger">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6>Avg Thresholds</h6>
+                    <h5 class="text-secondary">
+                        <span id="avgMin">0</span> / <span id="avgMax">0</span>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Sensor Status Distribution</h6>
+                    <canvas id="sensorPieChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Threshold Comparison</h6>
+                    <canvas id="thresholdBarChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            loadDashboardStats();
+
+            function loadDashboardStats() {
+                $.getJSON('/Home/GetDashboardStats', function (data) {
+                    $('#totalSensors').text(data.totalSensors);
+                    $('#activeSensors').text(data.activeSensors);
+                    $('#inactiveSensors').text(data.inactiveSensors);
+                    $('#avgMin').text(data.avgMinThreshold.toFixed(2));
+                    $('#avgMax').text(data.avgMaxThreshold.toFixed(2));
+
+                    // Pie Chart
+                    new Chart(document.getElementById('sensorPieChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: ['Active', 'Inactive'],
+                            datasets: [{
+                                data: [data.activeSensors, data.inactiveSensors],
+                                backgroundColor: ['#28a745', '#dc3545']
+                            }]
+                        }
+                    });
+
+                    // Bar Chart
+                    new Chart(document.getElementById('thresholdBarChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Min Threshold', 'Max Threshold'],
+                            datasets: [{
+                                label: 'Average Thresholds',
+                                data: [data.avgMinThreshold, data.avgMaxThreshold],
+                                backgroundColor: ['#007bff', '#ffc107']
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: { beginAtZero: true }
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}
