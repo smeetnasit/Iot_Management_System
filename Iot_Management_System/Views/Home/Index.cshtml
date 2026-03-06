@@ -26,7 +26,18 @@
             <h4 class="card-title" id="empList">Sensors List</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover" id="SensorTable">
-                    <tbody></tbody>
+                    <thead>
+                        <tr>
+                            <th>Sensor Code</th>
+                            <th>Sensor Name</th>
+                            <th>Unit</th>
+                            <th>Status</th>
+                            <th>Min Threshold</th>
+                            <th>Max Threshold</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    @* <tbody></tbody> *@
                 </table>
             </div>
         </div>
@@ -117,6 +128,7 @@
                 autoWidth: false,
                 paging: true,
                 processing: true,
+                order: [[0, "desc"]],
                 language: {
                     processing: "<div class='spinner-border text-primary'></div>",
                     emptyTable: "No data available"
@@ -167,7 +179,7 @@
                     success: function (response) {
                         var options = '<option value="">Select Sensor</option>';
                         response.forEach(item => {
-                            options += `<option value="${item.sensorName}">${item.sensorName} - ${item.Unit}</option>`;
+                            options += `<option value="${item.sensorName}">${item.sensorName} - ${item.unit}</option>`;
                         });
                         $('#sensorName').html(options);
                     },
@@ -243,12 +255,12 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
-                            table.ajax.reload(null, false);
+                            table.ajax.reload(null, true);
                         }
 
 
                             // ERROR FROM BACKEND
-                        if (response && response.message) {
+                       else if (response && response.message) {
                                 $(".field-error").remove();
                                 $(".input-error").removeClass("input-error");
 
