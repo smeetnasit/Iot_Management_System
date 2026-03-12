@@ -31,15 +31,12 @@ namespace Iot_Management_System_API.Repository
 
 
                     param.Add("@Sensor_Id", sensor.Sensor_Id, DbType.Int32, ParameterDirection.Input);
-                    param.Add("@Sensor_Name", sensor.Sensor_Name, DbType.String, ParameterDirection.Input);
+                    param.Add("@SensorUnitId", sensor.SensorUnitId, DbType.Int32, ParameterDirection.Input);
+                   // param.Add("@Sensor_Name", sensor.Sensor_Name, DbType.String, ParameterDirection.Input);
                     param.Add("@Sensor_Code", sensor.Sensor_Code, DbType.String, ParameterDirection.Input);
                     param.Add("@Sensor_State", sensor.Sensor_State, DbType.Int32, ParameterDirection.Input);
-                    //    param.Add("@Unit", sensor.Unit, DbType.String, ParameterDirection.Input);
                     param.Add("@MinThreshold", sensor.MinThreshold, DbType.Double, ParameterDirection.Input);
                     param.Add("@MaxThreshold", sensor.MaxThreshold, DbType.Double, ParameterDirection.Input);
-                    //param.Add("@Created_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
-                    //param.Add("@Updated_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
-                    //param.Add("@Deleted_By", sensor.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
 
 
 

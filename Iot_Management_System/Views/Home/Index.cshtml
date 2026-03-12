@@ -179,7 +179,9 @@
                     success: function (response) {
                         var options = '<option value="">Select Sensor</option>';
                         response.forEach(item => {
-                            options += `<option value="${item.sensorName}">${item.sensorName} - ${item.unit}</option>`;
+                            // options += `<option value="${item.sensorName}">${item.sensorName} - ${item.unit}</option>`;
+                            options += `<option value="${item.sensorID}">${item.sensorName} - ${item.unit}</option>`;
+
                         });
                         $('#sensorName').html(options);
                     },
@@ -194,8 +196,8 @@
                 var row = $(this).data('row');
                 $('#addSensorModalLabel').text('Edit Sensor');
                 $('#sensorIdHidden').val(row.sensor_Id);
-                $('#sensorName').val(row.sensor_Name);
-                loadSensorNameDropdown('sensorName', '#sensorName', row.sensor_Name);
+                $('#sensorName').val(row.sensorUnitId);
+                loadSensorNameDropdown('sensorName', '#sensorName', row.sensorUnitId);
                 $('#sensorCode').val(row.sensor_Code);
                 $('#sensorState').val(row.sensor_State);
                 $('#minThreshold').val(row.minThreshold);
@@ -210,7 +212,12 @@
                 success: function (data) {
                     let options = '<option value="">Select Sensor</option>';
                     data.forEach(function (item) {
-                        options += `<option value="${item.sensorName}" ${item.sensorName == selectedValue ? 'selected' : ''}>${item.sensorName}</option>`;
+                       // options += `<option value="${item.sensorName}" ${item.sensorName == selectedValue ? 'selected' : ''}>${item.sensorName}</option>`;
+
+                    options += `<option value="${item.sensorID}"
+                    ${item.sensorID == selectedValue ? 'selected' : ''}>
+                    ${item.sensorName} - ${item.unit}</option>`;
+
                     });
                     $('#sensorName').html(options);
                 },
@@ -234,7 +241,8 @@
                  $(".input-error").removeClass("input-error");
                 var formData = {
                     Sensor_Id: $('#sensorIdHidden').val(),
-                    Sensor_Name: $('#sensorName').val(),
+                    SensorUnitId: $('#sensorName').val(),
+                   // Sensor_Name: $('#sensorName').val(),
                     Sensor_Code: $('#sensorCode').val(),
                     Sensor_State: $('#sensorState').val(),
                     MinThreshold: $('#minThreshold').val(),
