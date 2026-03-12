@@ -26,6 +26,7 @@ namespace Iot_Management_System.ViewModal
             SensorModal sensorModal = new SensorModal
             {
                 Sensor_Id = sensor.Sensor_Id,
+                SensorUnitId = sensor.SensorUnitId,  
                 Sensor_Code = sensor.Sensor_Code,
                 Sensor_Name = sensor.Sensor_Name,
                 Sensor_State = sensor.Sensor_State,

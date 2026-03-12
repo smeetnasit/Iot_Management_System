@@ -5,14 +5,15 @@ namespace Iot_Management_System_API.DTO
     public class Sensor
     {
         public int Sensor_Id { get; set; }
+        public int? SensorUnitId { get; set; }
         public string? Sensor_Name { get; set; }
         public string? Sensor_Code { get; set; }
         public string? Sensor_Unit { get; set; }  // this comes from SensorUnits
         public int? Sensor_State { get; set; }
         public int? IsActive { get; set; }
 
-        public decimal? MinThreshold { get; set; }
-        public decimal? MaxThreshold { get; set; }
+        public double? MinThreshold { get; set; }
+        public double? MaxThreshold { get; set; }
         public string? Created_By { get; set; }
         public DateTime? Created_Date { get; set; }
         public string? Updated_By { get; set; }
