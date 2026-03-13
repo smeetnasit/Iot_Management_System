@@ -107,6 +107,24 @@ namespace Iot_Management_System_API.Repository
             }
         }
 
+        public async Task<List<SensorReading>> GetLatestReadings()
+        {
+            using (var connection = _dBContext.CreateConnection())
+            {
+                try
+                {
+                    var readings = await connection
+                        .QueryAsync<SensorReading>("Sp_Get_Latest_Readings",commandType: CommandType.StoredProcedure);
+                    return readings.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+
     }
 
     //public async Task<CommonResponse> MasterCountryInsert(int id)
