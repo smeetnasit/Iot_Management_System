@@ -12,5 +12,7 @@
         public double? Reading_Value { get; set; }
         public DateTime? Reading_Time { get; set; }
         public bool Is_Alert { get; set; }
+        public string? Alert_Status { get; set; }  
+
     }
 }

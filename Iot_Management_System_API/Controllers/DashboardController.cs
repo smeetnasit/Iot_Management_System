@@ -44,5 +44,39 @@ namespace Iot_Management_System_API.Controllers
         {
             return Ok(new { isRunning = SimulationControl.IsRunning });
         }
+
+        // GET: api/dashboard/alerts
+        [HttpGet("alerts")]
+        public async Task<IActionResult> GetAlertReadings()
+        {
+            var readings = await _sensorRepository.GetAlertReadings();
+            return Ok(readings);
+        }
+
+        // PUT: api/dashboard/alert/{id}/status
+        [HttpPut("alert/{id}/status")]
+        public async Task<IActionResult> UpdateAlertStatus(int id, [FromBody] AlertStatusRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Status))
+                return BadRequest(new { message = "Status is required" });
+
+            var validStatuses = new[] { "New", "Acknowledged", "Resolved" };
+            if (!validStatuses.Contains(request.Status))
+                return BadRequest(new { message = "Invalid status" });
+
+            var result = await _sensorRepository
+                .UpdateAlertStatus(id, request.Status);
+
+            if (!result)
+                return NotFound(new { message = "Alert not found" });
+
+            return Ok(new
+            {
+                message = $"Alert {request.Status} successfully",
+                readingId = id,
+                status = request.Status
+            });
+        }
+
     }
 }

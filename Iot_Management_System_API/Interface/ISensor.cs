@@ -10,6 +10,8 @@ namespace Iot_Management_System_API.Interface
         public Task<List<Sensor>> GetSensorsData();
         public Task<CommonResponse> DeleteSensorsData(int id);
         Task<List<SensorReading>> GetLatestReadings();
+        Task<List<SensorReading>> GetAlertReadings();
+        Task<bool> UpdateAlertStatus(int readingId, string status);
 
 
         //public Task<CommonResponse> Emp_Update(Sensor emp);
