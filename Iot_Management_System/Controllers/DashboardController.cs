@@ -2,7 +2,7 @@
 
 namespace Iot_Management_System.Controllers
 {
-    public class Dashboard : Controller
+    public class DashboardController : Controller
     {
         public IActionResult Index()
         {
