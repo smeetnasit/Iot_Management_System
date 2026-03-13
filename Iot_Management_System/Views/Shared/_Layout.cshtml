@@ -91,6 +91,8 @@
             flex-grow: 1;
             margin-left: var(--sidebar-width);
             padding: 30px;
+            padding-bottom: 80px; /* ← increase this */
+            min-height: 100vh;
             transition: margin-left 0.3s ease;
         }
 
@@ -106,6 +108,7 @@
             bottom: 0;
             left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
+            z-index: 999; /* ← add this */
         }
 
         /* ---------- Responsive ---------- */
