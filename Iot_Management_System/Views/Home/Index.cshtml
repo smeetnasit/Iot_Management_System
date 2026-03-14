@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Sensors Management";
+    var userRole = Context.Session.GetString("UserRole");
 }
 <style>
         .field-error {
@@ -25,9 +26,12 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold text-primary"><i class="bi bi-cpu"></i> Sensors Management</h4>
-        <button class="btn btn-primary" id="btnaddSensorModal">
-            <i class="bi bi-plus-circle"></i> Add Sensor
-        </button>
+        @if (userRole == "Admin" || userRole == "Engineer")
+        {
+            <button class="btn btn-primary" id="btnaddSensorModal">
+                <i class="bi bi-plus-circle"></i> Add Sensor
+            </button>
+        }
     </div>
 
     <div class="card">
@@ -167,16 +171,20 @@
                         title: "Actions",
                         data: null,
                         orderable: false,
-                        render: function (data, type, row) {
-                            return `
-                                <button class="btn btn-outline-warning btn-edit" data-row='${JSON.stringify(row)}'>
-                                    Edit
-                                </button>
-                                <button class="btn btn-outline-danger btn-delete" data-id="${row.sensor_Id}">
-                                    Delete
-                                </button>
-                            `;
-                        }
+                               render: function (data, type, row) {
+                                     var userRole = '@userRole';
+                                     var actions = '';
+                                     if (userRole === 'Admin' || userRole === 'Engineer') {
+                                         actions += `<button class="btn btn-outline-warning btn-edit"
+                                             data-row='${JSON.stringify(row)}'>Edit</button> `;
+                                     }
+                                     if (userRole === 'Admin') {
+                                         actions += `<button class="btn btn-outline-danger btn-delete"
+                                             data-id="${row.sensor_Id}">Delete</button>`;
+                                     }
+                                     if (actions === '') actions = '<span class="text-muted">—</span>';
+                                     return actions;
+                                 }
                     }
                 ]
             });

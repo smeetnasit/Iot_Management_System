@@ -149,6 +149,9 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">IoT Management</div>
+        <div style="text-align:center; color:#c5c6ca; font-size:12px; padding: 5px 0 10px 0;">
+            👤 @Context.Session.GetString("UserName")
+        </div>
 
         <a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")">
             <i class="bi bi-cpu"></i><span>Sensors</span>
@@ -157,20 +160,27 @@
         <a asp-controller="Dashboard" asp-action="Index" class="@(currentController == "Dashboard" ? "active" : "")">
             <i class="bi bi-speedometer2"></i><span>Dashboard</span>
         </a>
-
-        <a asp-controller="Alerts" asp-action="Index" class="@(currentController == "Alerts" ? "active" : "")">
-            <i class="bi bi-exclamation-triangle"></i><span>Alerts</span>
-        </a>
+        @if (Context.Session.GetString("UserRole") != "Viewer")
+        {
+            <a asp-controller="Alerts" asp-action="Index"
+               class="@(currentController == "Alerts" ? "active" : "")">
+                <i class="bi bi-exclamation-triangle"></i><span>Alerts</span>
+            </a>
+        }
 
         <a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")">
             <i class="bi bi-graph-up"></i><span>Reports</span>
         </a>
+        @if (Context.Session.GetString("UserRole") == "Admin")
+        {
+            <a asp-controller="Users" asp-action="Index"
+               class="@(currentController == "Users" ? "active" : "")">
+                <i class="bi bi-people"></i><span>Users</span>
+            </a>
+        }
 
-        <a asp-controller="Users" asp-action="Index" class="@(currentController == "Users" ? "active" : "")">
-            <i class="bi bi-people"></i><span>Users</span>
-        </a>
 
-        <a asp-controller="Account" asp-action="Logout">
+        <a asp-controller="Auth" asp-action="Logout">
             <i class="bi bi-box-arrow-right"></i><span>Logout</span>
         </a>
     </div>

@@ -78,5 +78,13 @@ namespace Iot_Management_System_API.Controllers
             });
         }
 
+
+        // GET: api/dashboard/report
+        [HttpGet("report")]
+        public async Task<IActionResult> GetSensorReport()
+        {
+            var report = await _sensorRepository.GetSensorReport();
+            return Ok(report);
+        }
     }
 }
