@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-graph-up"></i> Reports
+        </h2>
+        <small class="text-muted">Last updated: <span id="lastUpdated"></span></small>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Total Readings</h6>
+                    <h3 class="mb-0 text-primary" id="kpi-total">...</h3>
+                    <small class="text-muted">All sensors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Total Alerts</h6>
+                    <h3 class="mb-0 text-danger" id="kpi-alerts">...</h3>
+                    <small class="text-muted">All sensors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Avg Alert Rate</h6>
+                    <h3 class="mb-0 text-warning" id="kpi-rate">...%</h3>
+                    <small class="text-muted">Across all sensors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Most Alerting</h6>
+                    <h6 class="mb-0 text-danger" id="kpi-worst">...</h6>
+                    <small class="text-muted">Highest alert %</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="mb-3">Total Readings per Sensor</h6>
+                    <canvas id="readingsChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="mb-3">Alert % per Sensor</h6>
+                    <canvas id="alertChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Sensor Summary Report</h6>
+                <button class="btn btn-sm btn-outline-primary" id="refreshBtn">
+                    🔄 Refresh
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Sensor</th>
+                            <th>Unit</th>
+                            <th>Total Readings</th>
+                            <th>Normal</th>
+                            <th>Alerts</th>
+                            <th>Alert %</th>
+                            <th>Avg Value</th>
+                            <th>Min Value</th>
+                            <th>Max Value</th>
+                            <th>Health</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let readingsChart = null;
+        let alertChart = null;
+
+        function getHealthBadge(alertPct) {
+            if (alertPct === 0)
+                return '<span class="badge bg-success">✅ Excellent</span>';
+            else if (alertPct <= 10)
+                return '<span class="badge bg-success">🟢 Good</span>';
+            else if (alertPct <= 25)
+                return '<span class="badge bg-warning text-dark">🟡 Warning</span>';
+            else
+                return '<span class="badge bg-danger">🔴 Critical</span>';
+        }
+
+        function loadReport() {
+            $.get('https://localhost:7061/api/Dashboard/report',
+            function (data) {
+
+                // KPIs
+                const totalReadings = data.reduce(
+                    (sum, d) => sum + d.total_Readings, 0);
+                const totalAlerts = data.reduce(
+                    (sum, d) => sum + d.alert_Count, 0);
+                const avgRate = data.length > 0
+                    ? (data.reduce(
+                        (sum, d) => sum + parseFloat(d.alert_Percentage), 0)
+                        / data.length).toFixed(1)
+                    : 0;
+                const worst = data.length > 0 ? data[0].sensor_Name : '-';
+
+                $('#kpi-total').text(totalReadings.toLocaleString());
+                $('#kpi-alerts').text(totalAlerts.toLocaleString());
+                $('#kpi-rate').text(avgRate + '%');
+                $('#kpi-worst').text(worst);
+                $('#lastUpdated').text(new Date().toLocaleTimeString());
+
+                // Readings Chart
+                const labels = data.map(d => d.sensor_Name);
+                const readings = data.map(d => d.total_Readings);
+                const alerts = data.map(d => d.alert_Percentage);
+
+                if (readingsChart) readingsChart.destroy();
+                if (alertChart) alertChart.destroy();
+
+                readingsChart = new Chart(
+                    document.getElementById('readingsChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Readings',
+                            data: readings,
+                            backgroundColor: 'rgba(13,110,253,0.7)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+
+                alertChart = new Chart(
+                    document.getElementById('alertChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Alert %',
+                            data: alerts,
+                            backgroundColor: data.map(d =>
+                                d.alert_Percentage > 25
+                                    ? 'rgba(220,53,69,0.7)'
+                                    : d.alert_Percentage > 10
+                                        ? 'rgba(255,193,7,0.7)'
+                                        : 'rgba(25,135,84,0.7)'
+                            )
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: val => val + '%'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Table
+                let rows = '';
+                data.forEach(function (r) {
+                    const alertPct = parseFloat(r.alert_Percentage);
+                    const pctColor = alertPct > 25
+                        ? 'text-danger'
+                        : alertPct > 10
+                            ? 'text-warning'
+                            : 'text-success';
+
+                    rows += `<tr>
+                        <td>${r.sensor_Name}</td>
+                        <td>${r.sensor_Unit}</td>
+                        <td>${r.total_Readings}</td>
+                        <td class="text-success">${r.normal_Count}</td>
+                        <td class="text-danger">${r.alert_Count}</td>
+                        <td class="${pctColor}">
+                            <strong>${r.alert_Percentage}%</strong></td>
+                        <td>${r.avg_Value?.toFixed(2) ?? '-'}</td>
+                        <td>${r.min_Value ?? '-'}</td>
+                        <td>${r.max_Value ?? '-'}</td>
+                        <td>${getHealthBadge(alertPct)}</td>
+                    </tr>`;
+                });
+                $('#reportTableBody').html(rows);
+            });
+        }
+
+        $(document).ready(function () {
+            loadReport();
+            setInterval(loadReport, 30000);
+            $('#refreshBtn').click(function () {
+                loadReport();
+            });
+        });
+    </script>
+}

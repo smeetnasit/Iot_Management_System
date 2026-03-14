@@ -1,0 +1,232 @@
+﻿@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-people"></i> Users Management
+        </h2>
+        <button class="btn btn-primary" onclick="openAddModal()">
+            + Add User
+        </button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>#</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add User</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="userId" value="0" />
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control"
+                           id="fullName" placeholder="Enter full name" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control"
+                           id="email" placeholder="Enter email" />
+                </div>
+                <div class="mb-3" id="passwordDiv">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control"
+                           id="password" placeholder="Enter password" />
+                </div>
+                <div class="mb-3" id="statusDiv">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="isActive">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="role">
+                        <option value="Admin">Admin</option>
+                        <option value="Engineer">Engineer</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary"
+                        onclick="saveUser()">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadUsers() {
+            $.get('/Users/GetAllUsers', function (res) {
+                let rows = '';
+                res.data.forEach(function (u, index) {
+                    const statusBadge = u.isActive === 1
+                        ? '<span class="badge bg-success">Active</span>'
+                        : '<span class="badge bg-secondary">Inactive</span>';
+                    const roleBadge = u.role === 'Admin'
+                        ? '<span class="badge bg-danger">Admin</span>'
+                        : u.role === 'Engineer'
+                            ? '<span class="badge bg-warning text-dark">Engineer</span>'
+                            : '<span class="badge bg-info">Viewer</span>';
+                    const created = new Date(u.created_Date)
+                        .toLocaleDateString();
+
+                    rows += `<tr>
+                        <td>${index + 1}</td>
+                        <td>${u.full_Name}</td>
+                        <td>${u.email}</td>
+                        <td>${roleBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td>${created}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1"
+                                onclick="openEditModal(${u.user_Id},
+                                '${u.full_Name}', '${u.email}',
+                                '${u.role}',${u.isActive})">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger"
+                                onclick="deleteUser(${u.user_Id},
+                                '${u.full_Name}')">
+                                🗑️ Delete
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+                $('#usersTableBody').html(rows);
+            });
+        }
+
+        function openAddModal() {
+            $('#modalTitle').text('Add User');
+            $('#userId').val('0');
+            $('#fullName').val('');
+            $('#email').val('');
+            $('#password').val('');
+            $('#role').val('Viewer');
+            $('#passwordDiv').show();
+            new bootstrap.Modal(
+                document.getElementById('userModal')).show();
+        }
+
+        function openEditModal(id, name, email, role,isActive) {
+            $('#modalTitle').text('Edit User');
+            $('#userId').val(id);
+            $('#fullName').val(name);
+            $('#email').val(email);
+            $('#role').val(role);
+            $('#isActive').val(isActive);
+            $('#passwordDiv').hide();
+            new bootstrap.Modal(
+                document.getElementById('userModal')).show();
+        }
+
+        function saveUser() {
+            const userId = parseInt($('#userId').val());
+            const data = {
+                user_Id: userId,
+                full_Name: $('#fullName').val(),
+                email: $('#email').val(),
+                password: $('#password').val(),
+                role: $('#role').val(),
+                isActive: parseInt($('#isActive').val())
+
+            };
+
+            $.ajax({
+                url: '/Users/UpsertUser',
+                type: 'POST',
+                data: data,
+                success: function () {
+                    bootstrap.Modal.getInstance(
+                        document.getElementById('userModal')).hide();
+                    loadUsers();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: userId === 0
+                            ? 'User added!' : 'User updated!',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                },
+                error: function () {
+                    Swal.fire('Error', 'Could not save user', 'error');
+                }
+            });
+        }
+
+        function deleteUser(id, name) {
+            Swal.fire({
+                title: `Deactivate ${name}?`,
+                text: 'User will be deactivated!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Yes, deactivate!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Users/DeleteUser?id=${id}`, function () {
+                        loadUsers();
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'User deactivated!',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            loadUsers();
+        });
+    </script>
+}

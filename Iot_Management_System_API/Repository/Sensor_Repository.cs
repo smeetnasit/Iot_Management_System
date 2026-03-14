@@ -148,66 +148,25 @@ namespace Iot_Management_System_API.Repository
             }
         }
 
+        public async Task<List<SensorReport>> GetSensorReport()
+        {
+            using (var connection = _dBContext.CreateConnection())
+            {
+                var report = await connection.QueryAsync<SensorReport>("Sp_Get_Sensor_Report",commandType: CommandType.StoredProcedure);
+                return report.ToList();
+            }
+        }
+
+       
+
+       
+      
+
+
 
     }
 
     
 
 
-    //public async Task<CommonResponse> AdminLogin(string email, string password,int usertype)
-    //{
-    //    using (var connection = _dBContext.CreateConnection())
-    //    {
-    //        try
-    //        {
-    //            DynamicParameters param = new DynamicParameters();
-    //            param.Add("@Email", email, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@Password", password, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@Usertype", usertype, dbType: DbType.Int64, direction: ParameterDirection.Input);
-
-
-    //            var task = connection.QueryMultiple("Proc_SmeetAdminLogin", param, commandTimeout: 600, commandType: CommandType.StoredProcedure);
-    //            return task.Read<CommonResponse>().FirstOrDefault();
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            Console.WriteLine(ex);
-    //            throw;
-    //        }
-
-    //    }
-    //}
-
-
-    //public async Task<CommonResponse> InsertExcelEmployee(GetExcelEmployee emp)
-    //{
-    //    using (var connection = _dBContext.CreateConnection()) // Adjust to your DB connection method
-    //    {
-    //        try
-    //        {
-    //            var param = new DynamicParameters();
-    //            param.Add("@Id", emp.Id, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@EmpName", emp.EmpName, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@Address1", emp.Address1, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@Address2", emp.Address2, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@Country", emp.Country, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@State", emp.State, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@City", emp.City, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@MobileNo", emp.MobileNo, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@PhoneNo", emp.PhoneNo, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@Email", emp.Email, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@EmpDesignation", emp.EmpDesignation, dbType: DbType.String, direction: ParameterDirection.Input);
-    //            param.Add("@EmpSalary", emp.EmpSalary, dbType: DbType.Int64, direction: ParameterDirection.Input);
-    //            param.Add("@password", emp.Password, dbType: DbType.String, direction: ParameterDirection.Input);
-
-    //            var task = connection.QueryMultiple("Proc_ExcelData_Insert", param, commandTimeout: 600, commandType: CommandType.StoredProcedure);
-    //            return task.Read<CommonResponse>().FirstOrDefault();
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            throw ex;
-    //        }
-    //    }
-    //}
-    // }
 }

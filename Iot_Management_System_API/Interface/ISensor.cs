@@ -12,6 +12,8 @@ namespace Iot_Management_System_API.Interface
         Task<List<SensorReading>> GetLatestReadings();
         Task<List<SensorReading>> GetAlertReadings();
         Task<bool> UpdateAlertStatus(int readingId, string status);
+        Task<List<SensorReport>> GetSensorReport();
+      
 
 
         //public Task<CommonResponse> Emp_Update(Sensor emp);

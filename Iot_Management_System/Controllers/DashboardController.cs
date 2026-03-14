@@ -6,6 +6,8 @@ namespace Iot_Management_System.Controllers
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserEmail") == null)
+                return RedirectToAction("Login", "Auth");
             return View();
         }
     }
