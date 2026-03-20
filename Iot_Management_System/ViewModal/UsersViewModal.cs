@@ -19,7 +19,7 @@ namespace Iot_Management_System.ViewModal
 
             HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
             var response = await client.GetAsync(
-                "https://localhost:7061/api/Users",
+                "https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Users",
                 HttpCompletionOption.ResponseContentRead);
 
             if (response.IsSuccessStatusCode)
@@ -41,7 +41,7 @@ namespace Iot_Management_System.ViewModal
             HttpClient client = new HttpClient(handler);
             var serialized = JsonConvert.SerializeObject(user);
             var response = await client.PostAsync(
-                "https://localhost:7061/api/Users",
+                "https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Users",
                 new StringContent(serialized,
                     System.Text.Encoding.UTF8, "application/json"));
             var errorContent = await response.Content.ReadAsStringAsync();
@@ -59,7 +59,7 @@ namespace Iot_Management_System.ViewModal
 
             HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
             var response = await client.DeleteAsync(
-                $"https://localhost:7061/api/Users/{id}");
+                $"https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Users/{id}");
 
             if (response.IsSuccessStatusCode)
             {

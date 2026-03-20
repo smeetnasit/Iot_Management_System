@@ -117,7 +117,7 @@
         let activityChart = null;
 
         function loadDashboard() {
-            $.get('https://localhost:7061/api/Dashboard/latest', function (data) {
+            $.get('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/latest', function (data) {
 
                 // KPIs
                 const alertCount = data.filter(d => d.is_Alert).length;
@@ -223,7 +223,7 @@
 
             // ✅ ADD FROM HERE
             function loadStatus() {
-                $.get('https://localhost:7061/api/Dashboard/status', function (data) {
+                $.get('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/status', function (data) {
                     updatePauseResumeBtn(data.isRunning);
                 });
             }
@@ -246,7 +246,7 @@
                 var isCurrentlyRunning = $(this).hasClass('btn-warning');
                 var endpoint = isCurrentlyRunning ? 'pause' : 'resume';
 
-                $.post('https://localhost:7061/api/Dashboard/' + endpoint, function (data) {
+                $.post('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/' + endpoint, function (data) {
                     updatePauseResumeBtn(data.isRunning);
                     var msg = data.isRunning
                         ? 'Simulation resumed! ▶'

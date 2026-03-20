@@ -39,7 +39,7 @@ namespace Iot_Management_System.ViewModal
 
             HttpClient client = new HttpClient(handler);
             var serializedItemToCreate = JsonConvert.SerializeObject(sensorModal);
-            var response = await client.PostAsync("https://localhost:7061/api/Home/Add_Sensor",
+            var response = await client.PostAsync("https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Home/Add_Sensor",
                                    new StringContent(serializedItemToCreate,
                                    System.Text.Encoding.UTF8, "application/json")
                                     );
@@ -64,7 +64,7 @@ namespace Iot_Management_System.ViewModal
             List<Sensor_Units> units = new List<Sensor_Units>();
 
             HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
-            var response = await client.GetAsync("https://localhost:7061/api/Home/Get_Sensor_Units", HttpCompletionOption.ResponseContentRead);
+            var response = await client.GetAsync("https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Home/Get_Sensor_Units", HttpCompletionOption.ResponseContentRead);
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,7 +80,7 @@ namespace Iot_Management_System.ViewModal
             List<SensorModal> res = new List<SensorModal>();
 
             HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
-            var response = await client.GetAsync("https://localhost:7061/api/Home/GetSensorsData", HttpCompletionOption.ResponseContentRead);
+            var response = await client.GetAsync("https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Home/GetSensorsData", HttpCompletionOption.ResponseContentRead);
 
             if (response.IsSuccessStatusCode)
             {
@@ -98,7 +98,7 @@ namespace Iot_Management_System.ViewModal
 
             HttpClient client = await _clientHelper.PrepareAuthenticatedClient();
             var serializedItemToCreate = JsonConvert.SerializeObject(id);
-            string url = $"https://localhost:7061/api/Home/DeleteSensorsData?id={id}";
+            string url = $"https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Home/DeleteSensorsData?id={id}";
             var response = await client.PostAsync(url,
                                     new StringContent(serializedItemToCreate,
                                             System.Text.Encoding.Unicode,
