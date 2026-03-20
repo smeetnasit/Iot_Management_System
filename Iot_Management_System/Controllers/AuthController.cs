@@ -33,7 +33,7 @@ namespace Iot_Management_System.Controllers
                 Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync(
-                "https://localhost:7061/api/Auth/login", content);
+                "https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Auth/login", content);
 
             if (!response.IsSuccessStatusCode)
             {

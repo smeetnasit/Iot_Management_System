@@ -9,7 +9,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMVC", policy =>
     {
-        policy.WithOrigins("https://localhost:7051")
+        policy.WithOrigins("https://localhost:7051", "https://app-iot-mvc-dev-aubdbfhyddgqghbt.westus2-01.azurewebsites.net")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

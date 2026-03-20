@@ -119,7 +119,7 @@
 
         function updateStatus(readingId, newStatus) {
             $.ajax({
-                url: `https://localhost:7061/api/Dashboard/alert/${readingId}/status`,
+                url: `https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/alert/${readingId}/status`,
                 type: 'PUT',
                 contentType: 'application/json',
                 data: JSON.stringify({ status: newStatus }),
@@ -147,7 +147,7 @@
         }
 
         function loadAlerts() {
-            $.get('https://localhost:7061/api/Dashboard/alerts',
+            $.get('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/alerts',
             function (data) {
                 // KPIs
                 $('#kpi-total').text(data.length);
