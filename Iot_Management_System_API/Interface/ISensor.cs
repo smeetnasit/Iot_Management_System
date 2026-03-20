@@ -9,18 +9,15 @@ namespace Iot_Management_System_API.Interface
         public Task<List<Sensor_Units>> Get_Sensor_Units();
         public Task<List<Sensor>> GetSensorsData();
         public Task<CommonResponse> DeleteSensorsData(int id);
+        Task<List<SensorReading>> GetLatestReadings();
+        Task<List<SensorReading>> GetAlertReadings();
+        Task<bool> UpdateAlertStatus(int readingId, string status);
+        Task<List<SensorReport>> GetSensorReport();
+      
 
-
-        //public Task<CommonResponse> InsertExcelEmployee(GetExcelEmployee emp);
 
         //public Task<CommonResponse> Emp_Update(Sensor emp);
         //public Task<CommonResponse> AdminLogin(string email, string password, int usertype);
-        //public Task<List<Country>> GetCountries();
-        //public Task<CommonResponse> MasterCountryInsert(int country);
-        //public Task<List<CountryMaster>> GetMasterCountries();
-        //public Task<List<State>> GetStates(int CountryId);
-        //public Task<List<City>> GetCities(int StateId);
-        //public Task<List<GetEmployee>> GetEmployees();
 
 
     }

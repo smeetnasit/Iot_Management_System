@@ -2,10 +2,12 @@
 
 namespace Iot_Management_System.Controllers
 {
-    public class Dashboard : Controller
+    public class DashboardController : Controller
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserEmail") == null)
+                return RedirectToAction("Login", "Auth");
             return View();
         }
     }

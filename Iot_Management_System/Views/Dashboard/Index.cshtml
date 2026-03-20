@@ -1,254 +1,269 @@
 ﻿@{
     ViewData["Title"] = "IoT Dashboard";
 }
+
 <div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-4"> <h2 class="fw-bold text-primary"> <i class="bi bi-speedometer2"> </i>Dashboard</h2> <small class="text-muted">Updated: @DateTime.Now.ToString("g")</small> </div>
-<!-- KPI Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Active Sensors</h6>
-                <div class="d-flex align-items-center">
-                    <h3 class="mb-0 me-3" id="kpi-active">128</h3>
-                    <span class="text-success">+4.2%</span>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </h2>
+        <div class="d-flex align-items-center gap-3">
+            <small class="text-muted">Last updated: <span id="lastUpdated"></span></small>
+            <button class="btn btn-sm btn-warning" id="pauseResumeBtn">
+                ⏸ Pause Simulation
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Active Sensors</h6>
+                    <h3 class="mb-0" id="kpi-active">...</h3>
+                    <small class="text-muted">Total registered</small>
                 </div>
-                <small class="text-muted">Compared to last hour</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Alerts</h6>
+                    <h3 class="mb-0 text-danger" id="kpi-alerts">...</h3>
+                    <small class="text-muted">Current alerts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Normal</h6>
+                    <h3 class="mb-0 text-success" id="kpi-normal">...</h3>
+                    <small class="text-muted">Sensors OK</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Last Reading</h6>
+                    <h6 class="mb-0" id="kpi-lastread">...</h6>
+                    <small class="text-muted">Most recent time</small>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Alerts</h6>
-                <div class="d-flex align-items-center">
-                    <h3 class="mb-0 me-3 text-danger" id="kpi-alerts">7</h3>
-                    <span class="text-muted">Open</span>
+    <!-- Chart + Recent Alerts -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="mb-2">Sensor Latest Values</h6>
+                    <canvas id="activityChart" height="120"></canvas>
                 </div>
-                <small class="text-muted">Critical &amp; Warning</small>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Recent Alerts</h6>
+                    <ul class="list-group list-group-flush"
+                        id="recentAlerts"
+                        style="max-height:280px; overflow:auto;">
+                        <li class="list-group-item text-muted">Loading...</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Avg. Latency (ms)</h6>
-                <div class="d-flex align-items-center">
-                    <h3 class="mb-0 me-3" id="kpi-latency">34</h3>
-                    <span class="text-muted">avg</span>
-                </div>
-                <small class="text-muted">Past 24 hours</small>
+    <!-- Latest Readings Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Latest Sensor Readings</h6>
+                <button class="btn btn-sm btn-outline-primary" id="refreshBtn">
+                    🔄 Refresh
+                </button>
             </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6 col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Throughput</h6>
-                <div class="d-flex align-items-center">
-                    <h3 class="mb-0 me-3" id="kpi-throughput">2,145</h3>
-                    <span class="text-success">+1.1%</span>
-                </div>
-                <small class="text-muted">Events / hour</small>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sensor</th>
+                            <th>Code</th>
+                            <th>Unit</th>
+                            <th>Value</th>
+                            <th>Min</th>
+                            <th>Max</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="readingsTableBody">
+                        <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Charts & Recent -->
-<div class="row g-3 mb-4">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">Sensor Activity (last 24h)</h6>
-                    <small class="text-muted">hourly</small>
-                </div>
-                <canvas id="activityChart" height="120" aria-label="Sensor activity chart" role="img"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title">Recent Alerts</h6>
-                <ul class="list-group list-group-flush" id="recentAlerts" style="max-height:280px; overflow:auto;">
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Sensor-21</strong>
-                            <div class="small text-muted">Temperature threshold exceeded</div>
-                        </div>
-                        <span class="badge bg-danger rounded-pill">Now</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Sensor-7</strong>
-                            <div class="small text-muted">Connection lost</div>
-                        </div>
-                        <span class="badge bg-warning text-dark rounded-pill">5m</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Sensor-102</strong>
-                            <div class="small text-muted">Battery low</div>
-                        </div>
-                        <span class="badge bg-secondary rounded-pill">20m</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Recent readings table -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">Recent Readings</h6>
-            <div>
-                <button class="btn btn-sm btn-outline-secondary" id="refreshBtn">Refresh</button>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Sensor</th>
-                        <th>Value</th>
-                        <th>Status</th>
-                        <th>Received</th>
-                    </tr>
-                </thead>
-                <tbody id="readingsTableBody">
-                    <tr>
-                        <td>Sensor-21</td>
-                        <td>78.4 °C</td>
-                        <td><span class="badge bg-danger">Critical</span></td>
-                        <td>Just now</td>
-                    </tr>
-                    <tr>
-                        <td>Sensor-7</td>
-                        <td>--</td>
-                        <td><span class="badge bg-warning text-dark">Offline</span></td>
-                        <td>5m ago</td>
-                    </tr>
-                    <tr>
-                        <td>Sensor-102</td>
-                        <td>42%</td>
-                        <td><span class="badge bg-secondary">Normal</span></td>
-                        <td>10m ago</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</div>
-@* @section Scripts { <!-- Chart.js CDN --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    (function () {
-        // Sample data - replace with server data via AJAX/fetch
-        const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-        const data = labels.map((_, i) => Math.floor(50 + Math.random() * 150));
-
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        const activityChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Events',
-                    data,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13,110,253,0.1)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: { display: true },
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 50 }
-                    }
-                }
-            }
-        });
-
-        // Simple client-side refresh simulation
-        document.getElementById('refreshBtn').addEventListener('click', function () {
-            // In a real app, call an endpoint to get fresh metrics and update DOM/chart
-            const newVal = Math.floor(100 + Math.random() * 200);
-            document.getElementById('kpi-throughput').textContent = newVal.toLocaleString();
-
-            // Update chart with a new data point
-            activityChart.data.datasets[0].data.shift();
-            activityChart.data.datasets[0].data.push(Math.floor(50 + Math.random() * 150));
-            activityChart.update();
-        });
-    })();
-</script>
-} *@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        $(document).ready(function () {
+        let activityChart = null;
 
-            // Load KPIs
-            function loadKPIs() {
-                $.get('/Home/GetDashboardStats', function (data) {
-                    $('#kpi-active').text(data.activeSensors);
-                    $('#kpi-alerts').text(data.alertCount);
-                    $('#kpi-latency').text(data.avgLatency);
-                    $('#kpi-throughput').text(data.throughput.toLocaleString());
+        function loadDashboard() {
+            $.get('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/latest', function (data) {
+
+                // KPIs
+                const alertCount = data.filter(d => d.is_Alert).length;
+                const normalCount = data.filter(d => !d.is_Alert).length;
+                const lastTime = data.length > 0
+                    ? new Date(data[0].reading_Time).toLocaleTimeString()
+                    : '-';
+
+                $('#kpi-active').text(data.length);
+                $('#kpi-alerts').text(alertCount);
+                $('#kpi-normal').text(normalCount);
+                $('#kpi-lastread').text(lastTime);
+                $('#lastUpdated').text(new Date().toLocaleTimeString());
+
+                // Table
+                let rows = '';
+                data.forEach(function (r) {
+                    const rowClass = r.is_Alert ? 'table-danger' : '';
+                    const badge = r.is_Alert
+                        ? '<span class="badge bg-danger">Alert</span>'
+                        : '<span class="badge bg-success">Normal</span>';
+                    const time = new Date(r.reading_Time)
+                        .toLocaleTimeString();
+                    rows += `<tr class="${rowClass}">
+                        <td>${r.sensor_Name}</td>
+                        <td>${r.sensor_Code}</td>
+                        <td>${r.sensor_Unit}</td>
+                        <td><strong>${r.reading_Value}</strong></td>
+                        <td>${r.minThreshold}</td>
+                        <td>${r.maxThreshold}</td>
+                        <td>${badge}</td>
+                        <td>${time}</td>
+                    </tr>`;
                 });
-            }
+                $('#readingsTableBody').html(rows);
 
-            // Load Activity Chart
-            function loadActivityChart() {
-                $.get('/Home/GetSensorActivity', function (res) {
-                    const ctx = document.getElementById('activityChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: res.labels,
-                            datasets: [{
-                                label: 'Sensor Events',
-                                data: res.data,
-                                borderColor: '#0d6efd',
-                                backgroundColor: 'rgba(13,110,253,0.1)',
-                                fill: true,
-                                tension: 0.3,
-                                pointRadius: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: { legend: { display: false } },
-                            scales: { y: { beginAtZero: true } }
-                        }
+                // Recent Alerts list
+                const alerts = data.filter(d => d.is_Alert);
+                if (alerts.length === 0) {
+                    $('#recentAlerts').html(
+                        '<li class="list-group-item text-success">No alerts ✅</li>'
+                    );
+                } else {
+                    let alertItems = '';
+                    alerts.forEach(function (a) {
+                        alertItems += `<li class="list-group-item
+                            d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${a.sensor_Name}</strong>
+                                <div class="small text-muted">
+                                    Value: ${a.reading_Value}
+                                    (Min: ${a.minThreshold}, Max: ${a.maxThreshold})
+                                </div>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">!</span>
+                        </li>`;
                     });
-                });
-            }
+                    $('#recentAlerts').html(alertItems);
+                }
 
-            loadKPIs();
-            loadActivityChart();
+                // Chart
+                const labels = data.map(d => d.sensor_Name);
+                const values = data.map(d => d.reading_Value);
+                const colors = data.map(d =>
+                    d.is_Alert
+                        ? 'rgba(220,53,69,0.7)'
+                        : 'rgba(13,110,253,0.7)'
+                );
+
+                if (activityChart) activityChart.destroy();
+
+                const ctx = document
+                    .getElementById('activityChart')
+                    .getContext('2d');
+                activityChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Latest Value',
+                            data: values,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            });
+        }
+
+             $(document).ready(function () {
+            loadDashboard();
+
+            // Auto refresh every 30 seconds
+            setInterval(loadDashboard, 30000);
 
             $('#refreshBtn').click(function () {
-                loadKPIs();
-                loadActivityChart();
+                loadDashboard();
             });
+
+            // ✅ ADD FROM HERE
+            function loadStatus() {
+                $.get('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/status', function (data) {
+                    updatePauseResumeBtn(data.isRunning);
+                });
+            }
+
+            function updatePauseResumeBtn(isRunning) {
+                if (isRunning) {
+                    $('#pauseResumeBtn')
+                        .text('⏸ Pause Simulation')
+                        .removeClass('btn-success')
+                        .addClass('btn-warning');
+                } else {
+                    $('#pauseResumeBtn')
+                        .text('▶ Resume Simulation')
+                        .removeClass('btn-warning')
+                        .addClass('btn-success');
+                }
+            }
+
+            $('#pauseResumeBtn').click(function () {
+                var isCurrentlyRunning = $(this).hasClass('btn-warning');
+                var endpoint = isCurrentlyRunning ? 'pause' : 'resume';
+
+                $.post('https://app-iot-api-dev-f5fvhxbpagezbrhb.westus2-01.azurewebsites.net/api/Dashboard/' + endpoint, function (data) {
+                    updatePauseResumeBtn(data.isRunning);
+                    var msg = data.isRunning
+                        ? 'Simulation resumed! ▶'
+                        : 'Simulation paused! ⏸';
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: msg,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                });
+            });
+
+            loadStatus();
+            // ✅ ADD UNTIL HERE
 
         });
     </script>

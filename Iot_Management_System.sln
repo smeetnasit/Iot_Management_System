@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36603.0 d17.14
+VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot_Management_System", "Iot_Management_System\Iot_Management_System.csproj", "{5A8F082F-B0EF-458A-90D0-ACAFE309B0B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot_Management_System_API", "Iot_Management_System_API\Iot_Management_System_API.csproj", "{C5A07C3B-16FE-4E22-AAE8-DEF08E452B36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iot_Management_System_Simulation", "Iot_Management_System_Simulation\Iot_Management_System_Simulation.csproj", "{40A37094-951D-4093-AE0D-3A2C20DD07C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C5A07C3B-16FE-4E22-AAE8-DEF08E452B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5A07C3B-16FE-4E22-AAE8-DEF08E452B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5A07C3B-16FE-4E22-AAE8-DEF08E452B36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A37094-951D-4093-AE0D-3A2C20DD07C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A37094-951D-4093-AE0D-3A2C20DD07C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A37094-951D-4093-AE0D-3A2C20DD07C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A37094-951D-4093-AE0D-3A2C20DD07C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
